@@ -115,4 +115,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return pageResult;
     }
+
+    /*
+    * 启用禁用员工账号
+    * */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        //根据员工ID修改员工状态status
+        Employee employee = Employee.builder().id(id).status(status).build();
+
+        employeeMapper.update(employee);
+    }
 }
