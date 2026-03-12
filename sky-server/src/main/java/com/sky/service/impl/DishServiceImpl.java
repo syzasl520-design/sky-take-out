@@ -93,14 +93,69 @@ public class DishServiceImpl implements DishService {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
 
-        //删除菜品表中的数据
-        for (Long id : ids) {
+        //删除菜品表中的数据  每次循环都要进行SQL删除，效率会比较低
+        /*for (Long id : ids) {
             dishMapper.deleteById(id);
-        }
+        }*/
 
-        //删除菜品关联的口味数据
-        for (Long id : ids) {
+        //批量删除菜品数据
+        //sql: delete from dish where id in (?,?,?)
+        dishMapper.deleteByIds(ids);
+
+        //删除菜品关联的口味数据  每次循环都要进行SQL删除，效率会比较低
+        /*for (Long id : ids) {
             dishFlavorMapper.deleteByDishId(id);
+        }*/
+
+        //批量删除菜品关联的口味数据
+        //sql: delete from dish_favor where dish_id in (?,?,?)
+        dishFlavorMapper.deleteByDishIds(ids);
+    }
+
+    /*
+     * 根据id查询菜品和对应的口味数据
+     * @param id
+     * */
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+        //根据ID查询菜品数据
+        Dish dish = dishMapper.getById(id);
+
+        //根据菜品ID查询口味数据
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+
+        //组装DishVO对象并返回
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish,dishVO);
+        dishVO.setFlavors(dishFlavors);
+
+        return dishVO;
+    }
+
+    /*
+     * 根据ID修改菜品基本信息和对应的口味信息
+     * @param dishDTO
+     * @return
+     * */
+    @Override
+    public void updateWithFlavor(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+
+        //修改菜品表的基本信息
+        dishMapper.update(dish);
+
+        //先根据菜品ID删除口味表中对应的数据
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+
+        //再插入新的口味数据
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if(flavors != null && flavors.size() > 0){
+            flavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dishDTO.getId());
+            });
+            //批量插入口味数据
+            dishFlavorMapper.insertBatch(flavors);
         }
     }
 }
