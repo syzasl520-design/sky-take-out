@@ -14,7 +14,31 @@
                 and type = #{type}
             </if>
         </where>
-        order by create_time desc
+        order by sort asc, create_time desc
     </select>
+
+    <!--    根据分类类型查询分类-->
+    <select id="list" resultType="com.sky.entity.Category">
+        select * from category
+        where status = 1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        order by sort asc, create_time desc
+    </select>
+
+    <!--    根据主键修改分类属性-->
+    <update id="update" parameterType="category">
+        update category
+        <set>
+            <if test="type != null">type = #{type},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
 
 </mapper>
