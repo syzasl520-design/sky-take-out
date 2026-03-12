@@ -6,6 +6,12 @@ spring:
     active: dev
   main:
     allow-circular-references: true
+  servlet:
+    multipart:
+      #最大单个文件大小
+      max-file-size: 10MB
+      #最大请求大小(包括所有文件和表单数据)
+      max-request-size: 100MB
   datasource:
     druid:
       driver-class-name: ${sky.datasource.driver-class-name}
@@ -21,6 +27,7 @@ mybatis:
     #开启驼峰命名
     map-underscore-to-camel-case: true
 
+#日志配置
 logging:
   level:
     com:
@@ -29,6 +36,7 @@ logging:
         service: info
         controller: info
 
+#jwt配置
 sky:
   jwt:
     # 设置jwt签名加密时使用的秘钥
@@ -37,3 +45,9 @@ sky:
     admin-ttl: 86400000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+  aliyun:
+    oss:
+      endpoint: ${sky.aliyun.oss.endpoint}
+      bucketName: ${sky.aliyun.oss.bucketName}
+      region: ${sky.aliyun.oss.region}
+
