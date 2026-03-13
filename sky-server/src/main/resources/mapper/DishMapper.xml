@@ -20,6 +20,7 @@
         order by d.create_time desc
     </select>
 
+
     <!--    根据ID批量删除菜品-->
     <delete id="deleteByIds">
         delete from dish where id in
@@ -28,6 +29,7 @@
         </foreach>
     </delete>
 
+    <!--    动态修改菜品数据-->
     <update id="update">
         update dish
         <set>
@@ -42,4 +44,16 @@
         </set>
         where id = #{id}
     </update>
+
+    <!--    根据分类ID查询菜品-->
+    <select id="list" resultType="Dish" parameterType="Dish">
+        select * from dish
+        <where>
+            <if test="categoryId != null">and category_id = #{categoryId}</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="name != null">and name like concat('%',#{name},'%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
 </mapper>
